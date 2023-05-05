@@ -13,6 +13,16 @@ services:
       - dhcp_network
     ports:
       - "67:67/udp"
+  firewall:
+    build: ./firewall
+    container_name: firewall
+    restart: always
+    network_mode: host
+    privileged: true
+    volumes:
+      - /lib/modules:/lib/modules
+    environment:
+      - HOST_NETWORK_INTERFACE=HOST_NETWORK_INTERFACE
 networks:
   dhcp_network:
     external: true

@@ -1,0 +1,29 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Establecer la política predeterminada para las cadenas INPUT, FORWARD y OUTPUT
+-P INPUT DROP
+-P FORWARD DROP
+-P OUTPUT DROP
+
+# Permitir el tráfico entrante relacionado y establecido
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+# Permitir el tráfico saliente
+-A OUTPUT -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
+
+# Permitir el tráfico entrante en el puerto 22 (SSH)
+-A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+
+# Permitir el tráfico entrante en el puerto 67 (DHCP)
+-A INPUT -p udp --dport 67 -m conntrack --ctstate NEW -j ACCEPT
+
+# Rechazar paquetes no válidos
+-A INPUT -m conntrack --ctstate INVALID -j DROP
+
+# Registrar paquetes bloqueados
+-A INPUT -m limit --limit 3/min --limit-burst 10 -j LOG --log-prefix "INPUT_DROP: " --log-level 4
+
+COMMIT
