@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  dhcp:
+    build: ./dhcp
+    container_name: dhcp
+    restart: always
+    environment:
+      - INTERFACES=eth0
+    volumes:
+      - ./dhcp/dhcpd.conf:/etc/dhcp/dhcpd.conf
+      - ./dhcp/dhcpd.leases:/var/lib/dhcp/dhcpd.leases
+    networks:
+      - dhcp_network
+    ports:
+      - "67:67/udp"
+networks:
+  dhcp_network:
+    external: true
